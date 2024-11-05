@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insurance Jeopardy!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Syne', sans-serif;
+            background-color: #001246;
+            color: #FFFFFF;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        h1 {
+            color: #FE4600;
+            margin-top: 20px;
+        }
+        #scoreboard {
+            margin-top: 10px;
+            font-size: 24px;
+            color: #07A0C3;
+        }
+        #jeopardy-board {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            width: 90%;
+            margin-top: 20px;
+        }
+        .category {
+            background-color: #0CE5FB;
+            padding: 15px;
+            font-weight: bold;
+            color: #001246;
+        }
+        .question {
+            background-color: #FE4600;
+            padding: 30px;
+            font-size: 24px;
+            color: #FFFFFF;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        .question.disabled {
+            background-color: #555;
+            cursor: default;
+            border: 2px solid #07A0C3;
+        }
+        #question-popup, #name-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #0CE5FB;
+            padding: 20px;
+            border: 3px solid #07A0C3;
+            display: none;
+            color: #001246;
+            width: 300px;
+            text-align: center;
+        }
+        #question-popup p, #name-popup p {
+            font-size: 18px;
+            margin: 0;
+        }
+        #question-popup button, #name-popup button {
+            margin-top: 10px;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #FE4600;
+            border: none;
+            color: #FFFFFF;
+            cursor: pointer;
+            display: block;
+            width: 100%;
+            margin-bottom: 5px;
+        }
+        #question-popup button:hover, #name-popup button:hover {
+            background-color: #07A0C3;
+        }
+        #leaderboard {
+            margin-top: 20px;
+            font-size: 20px;
+            color: #07A0C3;
+            text-align: left;
+            width: 300px;
+        }
+        #leaderboard h2 {
+            text-align: center;
+            font-size: 24px;
+            color: #FE4600;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Insurance Jeopardy!</h1>
+    <div id="scoreboard">Score: $0</div>
+
+    <div id="jeopardy-board">
+        <!-- Categories and Questions -->
+        <div class="category">Introduction</div>
+        <div class="category">Key Concepts</div>
+        <div class="category">Life Insurance</div>
+        <div class="category">Non-Life Insurance</div>
+        <div class="category">Departments</div>
+
+        <div class="question" id="intro100" onclick="showQuestion('intro100', 100)">100</div>
+        <div class="question" id="key100" onclick="showQuestion('key100', 100)">100</div>
+        <div class="question" id="life100" onclick="showQuestion('life100', 100)">100</div>
+        <div class="question" id="nonLife100" onclick="showQuestion('nonLife100', 100)">100</div>
+        <div class="question" id="dept100" onclick="showQuestion('dept100', 100)">100</div>
+
+        <div class="question" id="intro200" onclick="showQuestion('intro200', 200)">200</div>
+        <div class="question" id="key200" onclick="showQuestion('key200', 200)">200</div>
+        <div class="question" id="life200" onclick="showQuestion('life200', 200)">200</div>
+        <div class="question" id="nonLife200" onclick="showQuestion('nonLife200', 200)">200</div>
+        <div class="question" id="dept200" onclick="showQuestion('dept200', 200)">200</div>
+
+        <div class="question" id="intro300" onclick="showQuestion('intro300', 300)">300</div>
+        <div class="question" id="key300" onclick="showQuestion('key300', 300)">300</div>
+        <div class="question" id="life300" onclick="showQuestion('life300', 300)">300</div>
+        <div class="question" id="nonLife300" onclick="showQuestion('nonLife300', 300)">300</div>
+        <div class="question" id="dept300" onclick="showQuestion('dept300', 300)">300</div>
+
+        <div class="question" id="intro400" onclick="showQuestion('intro400', 400)">400</div>
+        <div class="question" id="key400" onclick="showQuestion('key400', 400)">400</div>
+        <div class="question" id="life400" onclick="showQuestion('life400', 400)">400</div>
+        <div class="question" id="nonLife400" onclick="showQuestion('nonLife400', 400)">400</div>
+        <div class="question" id="dept400" onclick="showQuestion('dept400', 400)">400</div>
+
+        <div class="question" id="intro500" onclick="showQuestion('intro500', 500)">500</div>
+        <div class="question" id="key500" onclick="showQuestion('key500', 500)">500</div>
+        <div class="question" id="life500" onclick="showQuestion('life500', 500)">500</div>
+        <div class="question" id="nonLife500" onclick="showQuestion('nonLife500', 500)">500</div>
+        <div class="question" id="dept500" onclick="showQuestion('dept500', 500)">500</div>
+    </div>
+
+    <div id="question-popup">
+        <p id="question-text"></p>
+        <p id="correct-answer" style="display: none;"></p>
+        <button id="answer1" onclick="selectAnswer(1)"></button>
+        <button id="answer2" onclick="selectAnswer(2)"></button>
+        <button id="answer3" onclick="selectAnswer(3)"></button>
+        <button id="answer4" onclick="selectAnswer(4)"></button>
+    </div>
+
+    <div id="name-popup">
+        <p>Enter your name:</p>
+        <input type="text" id="player-name" placeholder="Your Name" />
+        <button onclick="submitScore()">Submit Score</button>
+    </div>
+
+    <div id="leaderboard">
+        <h2>Leaderboard</h2>
+        <ul id="score-list"></ul>
+    </div>
+
+    <script>
+        // Check if leaderboard exists; if not, initialize it
+        if (!localStorage.getItem("leaderboard")) {
+            localStorage.setItem("leaderboard", JSON.stringify([]));
+        }
+
+        // Display the initial leaderboard
+        displayLeaderboard();
+
+        const questions = {
+            intro100: { question: "What is insurance?", options: ["A system of money exchange", "A form of financial protection", "A type of investment", "A savings plan"], correct: 2 },
+            intro200: { question: "When did modern insurance start?", options: ["Middle Ages", "Renaissance", "Ancient Rome", "Industrial Revolution"], correct: 1 },
+            intro300: { question: "What is a premium?", options: ["The amount paid for coverage", "The total value of the policy", "The number of claims", "The coverage limit"], correct: 1 },
+            intro400: { question: "What does a deductible refer to?", options: ["The total amount of coverage", "The amount you pay before insurance kicks in", "The insurance company's profit", "The policyholder's age"], correct: 2 },
+            intro500: { question: "What is underwriting?", options: ["Evaluating risk for insurance", "Paying out claims", "Selling policies", "Collecting premiums"], correct: 1 },
+
+            key100: { question: "What is the purpose of insurance?", options: ["To save money", "To provide risk management", "To avoid all risks", "To guarantee returns"], correct: 2 },
+            key200: { question: "What is the total coverage limit?", options: ["The maximum amount payable", "The total premiums paid", "The policyholder's debt", "The total cost"], correct: 1 },
+            key300: { question: "What is a policyholder?", options: ["The insurance company", "The person who owns the policy", "The agent selling the policy", "The beneficiary of the policy"], correct: 2 },
+            key400: { question: "What is a claim?", options: ["A demand for payment under a policy", "The initial payment", "A type of coverage", "The agent's commission"], correct: 1 },
+            key500: { question: "What is a rider in insurance?", options: ["An additional coverage", "A type of policy", "A discount", "A claim"], correct: 1 },
+
+            life100: { question: "What is life insurance?", options: ["Coverage for property", "Coverage for living expenses", "Coverage for the insured's life", "Coverage for medical bills"], correct: 3 },
+            life200: { question: "What is term life insurance?", options: ["Coverage for a lifetime", "Coverage for a specified period", "Whole life coverage", "Universal life coverage"], correct: 2 },
+            life300: { question: "What does whole life insurance provide?", options: ["Temporary coverage", "Cash value accumulation", "Only death benefits", "No cash value"], correct: 2 },
+            life400: { question: "What is a beneficiary?", options: ["The policyholder", "The person who receives the payout", "The insurance agent", "The insurance company"], correct: 2 },
+            life500: { question: "What is a rider in insurance?", options: ["An additional coverage", "A type of policy", "A discount", "A claim"], correct: 1 },
+
+            nonLife100: { question: "What is property insurance?", options: ["Coverage for personal injuries", "Coverage for loss or damage to property", "Coverage for life", "Coverage for legal liability"], correct: 2 },
+            nonLife200: { question: "What is health insurance?", options: ["Coverage for auto accidents", "Coverage for medical expenses", "Coverage for life", "Coverage for home repairs"], correct: 2 },
+            nonLife300: { question: "What does auto insurance typically cover?", options: ["Only property damage", "Liability and damage", "Only theft", "Only accidents"], correct: 2 },
+            nonLife400: { question: "What is workers' compensation?", options: ["Coverage for personal injuries", "Insurance for workers injured on the job", "Health insurance", "Life insurance"], correct: 2 },
+            nonLife500: { question: "What is flood insurance?", options: ["Coverage for natural disasters", "Coverage for vehicle accidents", "Health insurance", "Home insurance"], correct: 1 },
+
+            dept100: { question: "What does the underwriting department do?", options: ["Sells policies", "Evaluates risk", "Processes claims", "Handles customer service"], correct: 2 },
+            dept200: { question: "What is the role of claims department?", options: ["Processes applications", "Evaluates risk", "Handles policy sales", "Manages claims"], correct: 4 },
+            dept300: { question: "What is the purpose of the marketing department?", options: ["Evaluate risk", "Sell insurance products", "Handle claims", "Provide customer service"], correct: 2 },
+            dept400: { question: "What does the customer service department do?", options: ["Evaluates claims", "Sells insurance", "Handles customer inquiries", "Underwrites policies"], correct: 3 },
+            dept500: { question: "What is the role of the finance department?", options: ["Sells policies", "Manages financial resources", "Handles marketing", "Processes claims"], correct: 2 },
+        };
+
+        let score = 0;
+        let answeredQuestions = 0;
+        const totalQuestions = Object.keys(questions).length;
+
+        function showQuestion(id, value) {
+            // Check if the question has already been answered
+            if (document.getElementById(id).classList.contains("disabled")) {
+                return; // Do nothing if the question is already answered
+            }
+
+            const questionData = questions[id];
+            document.getElementById("question-text").innerText = questionData.question;
+            document.getElementById("answer1").innerText = questionData.options[0];
+            document.getElementById("answer2").innerText = questionData.options[1];
+            document.getElementById("answer3").innerText = questionData.options[2];
+            document.getElementById("answer4").innerText = questionData.options[3];
+            document.getElementById("question-popup").dataset.correctAnswer = questionData.correct;
+            document.getElementById("question-popup").dataset.currentValue = value;
+            document.getElementById("question-popup").dataset.currentQuestion = id;
+
+            document.getElementById("correct-answer").innerText = `Correct Answer: ${questionData.options[questionData.correct - 1]}`;
+            document.getElementById("correct-answer").style.display = "none";
+
+            document.getElementById("question-popup").style.display = "block";
+        }
+
+        function selectAnswer(choice) {
+            const correctAnswer = parseInt(document.getElementById("question-popup").dataset.correctAnswer);
+            const questionValue = parseInt(document.getElementById("question-popup").dataset.currentValue);
+            const questionID = document.getElementById("question-popup").dataset.currentQuestion;
+
+            if (choice === correctAnswer) {
+                score += questionValue;
+                alert("Correct!");
+            } else {
+                score -= questionValue;
+                document.getElementById("correct-answer").style.display = "block";
+                alert("Incorrect! " + document.getElementById("correct-answer").innerText);
+            }
+
+            document.getElementById("scoreboard").innerText = `Score: $${score}`;
+            answeredQuestions++;
+            // Disable the question after answering
+            document.getElementById(questionID).classList.add("disabled");
+            document.getElementById(questionID).onclick = null; // Disable click event
+            document.getElementById("question-popup").style.display = "none";
+
+            if (answeredQuestions === totalQuestions) {
+                document.getElementById("name-popup").style.display = "block";
+            }
+        }
+
+        function submitScore() {
+            const playerName = document.getElementById("player-name").value;
+            if (playerName) {
+                const leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
+                leaderboard.push({ name: playerName, score: score });
+                localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
+                displayLeaderboard();
+                document.getElementById("name-popup").style.display = "none";
+            }
+        }
+
+        function displayLeaderboard() {
+            const leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
+            leaderboard.sort((a, b) => b.score - a.score);
+            const scoreList = document.getElementById("score-list");
+            scoreList.innerHTML = '';
+            leaderboard.forEach(entry => {
+                const li = document.createElement("li");
+                li.innerText = `${entry.name}: $${entry.score}`;
+                scoreList.appendChild(li);
+            });
+        }
+    </script>
+
+</body>
+</html>
